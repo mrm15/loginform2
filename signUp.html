@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.0.0/sweetalert2.all.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="./styles/reset.css" />
+    <link rel="stylesheet" href="./styles/style.css" />
+  </head>
+
+  <body>
+    <form id="register">
+      <i class="fa fa-arrow-left" id="back"></i>
+      <a id="editedPass" href="pages/modified.html">ویرایش گذرواژه</a>
+      <h1>ثبت نام</h1>
+
+      <div id="btns">
+        <button type="button" id="login">
+          <a href="pages/login.html">ورود</a>
+        </button>
+        <button class="active" type="button" id="signUp">
+          <a href="signUp.html">عضویت</a>
+        </button>
+      </div>
+
+      <label for="UserName">
+        <p>نام :</p>
+        <input
+          autocomplete="off"
+          name="fname"
+          id="fName"
+          type="text"
+          placeholder="مثال : مبین"
+        />
+      </label>
+
+      <label for="UserName">
+        <p>نام خانوادگی :</p>
+        <input
+          autocomplete="off"
+          name="lname"
+          id="lName"
+          type="text"
+          placeholder="مثال : قائمی"
+        />
+      </label>
+
+      <label for="password">
+        <p>گذرواژه :</p>
+        <input
+          id="password"
+          name="password"
+          type="text"
+          placeholder="مثال : 1234"
+        />
+      </label>
+
+      <label for="Email">
+        <p>ایمیل :</p>
+        <input
+          autocomplete="off"
+          name="email"
+          id="Email"
+          type="email"
+          placeholder="مثال : example@gmail.com"
+        />
+      </label>
+
+      <label for="phone">
+        <p>شماره تلفن :</p>
+        <input
+          id="phone"
+          type="text"
+          name="tel"
+          placeholder="مثال : 09123456789"
+        />
+      </label>
+
+      <button class="active" id="login" name="login" type="submit" name="login">
+        ثبت نام
+      </button>
+    </form>
+
+    <script src="scripts/app.js"></script>
+  </body>
+</html>
