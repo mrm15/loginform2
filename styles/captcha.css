@@ -1,0 +1,40 @@
+
+.cap {
+  background: url(../captcha-bg.png) !important;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  direction: ltr;
+
+  color: rgba(0, 0, 0, 0.2);
+  user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+
+  font-size: 1rem;
+  padding: 1rem;
+  margin: 0.5rem 0.5rem;
+
+  border: 1.5px solid rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+
+  width: max-content;
+
+  text-align: center;
+}
+#captcha {
+  font-size: 1.2;
+}
+
+.cap::selection {
+    background-color: skyblue;
+    color: black;
+}
+::-moz-selection {
+    background-color: skyblue;
+    color: black;
+}
