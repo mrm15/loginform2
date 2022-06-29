@@ -1,97 +1,236 @@
 <?php
-
-include "function.php";
-include "config.php";
-
-
 header("Access-Control-Allow-Origin: *");
- header("Access-Control-Allow-Headers: access");
-  header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
-  header("Access-Control-Allow-Credentials: true");
- header("Content-Type:application/json");
-header('Content-Type: text/html; charset=utf-8');
+header("Access-Control-Allow-Headers: access");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
+header("Access-Control-Allow-Credentials: true");
+header("Content-Type:application/json");
+// include ("error.php");
+// $username = stripslashes($_POST['username']);
 
-
-
-
-$email1 = $tel1 = [0];
+//     $username = mysqli_real_escape_string($con,$username); 
+//     $email = stripslashes($_POST['email']);
+//     $email = mysqli_real_escape_string($con,$email);
+$errors=[0];
+$link= mysqli_connect('localhost','root','');
+if (! $link) {
+echo 'could not connect :' . mysqli_connect_error();
+exit;
+}
+echo 'connect sucsessfuly';
+mysqli_select_db($link,'login1');
 foreach ($_REQUEST as $key => $value) 
 {
-    if ($key =="register") 
+    if ($key=="register") 
     {
         $registerdata=$value;
         $registerdata=json_decode($registerdata,TRUE);
-        if (is_array($registerdata) || is_object($registerdata)) 
-        {
-            foreach ($registerdata as $r) 
-            {
-                if ($r['name'] == "fname") 
-                {
-                    $fname=$r['value'];
-                    // $fname = preg_replace("/(?<!\s);(?!\s)/", "" , $fname);
-                    // $fname = preg_replace('/[0-9]+/', '', $fname);  
-                    // $fname = preg_replace("/[^A-Za-z0-9_\?\-\(\)\! \ا\ب\پ\ت\ث\ج\چ\ح\خ\د\ذ\ر\ز\ژ\س\ش\ص\ض\ط\ظ\ع\غ\ف\ق\ک\گ\ل\م\ن\و\ه\ی\ك\آ\ي\ئ]/", "", $fname);
-                }
-                if ($r['name'] == "lname") 
-                {
-                    $lname=$r['value'];
-                    // $lname = preg_replace("/(?<!\s);(?!\s)/", "", $lname);
-                    // $lname = preg_replace('/[0-9]+/', '', $lname);
-                    // $lname = preg_replace("/[^A-Za-z0-9_\?\-\(\)\! \ا\ب\پ\ت\ث\ج\چ\ح\خ\د\ذ\ر\ز\ژ\س\ش\ص\ض\ط\ظ\ع\غ\ف\ق\ک\گ\ل\م\ن\و\ه\ی\ك\آ\ي\ئ]/", "", $lname);
-                }
-                if ($r['name'] == "email") 
-                {
-                    $email=$r['value'];
-                    // $email = preg_replace("/(?<!\s);(?!\s)/", "", $email);
-                }
-                if ($r['name'] == "tel") 
-                {
-                    $tel=$r['value'];
-                    // $tel = preg_replace("/(?<!\s);(?!\s)/", "", $tel);
-                }
-                if ($r['name'] == "password") 
-                {
-                    $password=$r['value'];
-                    // $password = preg_replace("/(?<!\s);(?!\s)/", "", $password);
-                }
-            }
-        }
-
-        if (!empty($fname) && !empty($lname) && !empty($email) && !empty($tel)  && !empty($password))
-        {
-            check_fname($fname);
-            check_lname($lname);
-            check_email($email);
-            check_tel($tel);
-            check_pass($password);
-
-            $query = "SELECT * FROM register WHERE `tel`='$tel' || `email`='$email'";
-            $result = mysqli_query($connection, $query);
-    
-            if (mysqli_num_rows($result)  ===  0) 
-            {
-                insert($password , $fname , $lname , $email , $connection , $tel);
-            }
-            else
-            {
-                $sql1 = " SELECT  `tel`,`email` FROM register";
-            
-                $result=mysqli_query($connection,$sql1);
         
-                if (mysqli_num_rows($result) != 0 ) 
-                {
-                    $result=mysqli_fetch_all($result , MYSQLI_ASSOC);
-                    check_email_tel($result , $email , $tel);  
-                }
-            } 
-        }
-        else 
+        foreach ($registerdata as $k) 
         {
-            $json=array('status'=>FALSE , 'data'=>"فیلد ها نمیتواند خالی باشد");
-            $out=json_encode($json , JSON_PRESERVE_ZERO_FRACTION|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
-            echo $out;
-        }
-    }
-}
+            if ($k['name'] == "name") 
+            {
+                $name=$k['value'];
+                if(is_null($name) || $name =="" ) {
+                    $errors = $errors.'فیلد نام نمی‌تواند خالی بماند';
+   
+                   }
+                // }
+                $name=str_replace(" ","",$name);
+                if($pattern = preg_match('/^[-A-Za-z\p{L} ]+$/u', $name) && mb_strlen($name)>2){
+                    $name=mysqli_real_escape_string($link,$name);
+                }
+                else {
+                    $errors = $errors.'فیلدنام حتما باید حروف باشدوبیشتردوحروف باشد';
+   
+                }
+                
+               
+                
+            }
+            if ($k['name'] == "tel") 
+            {
+                        $tel=$k['value'];
+                        if (is_numeric($tel)) {
+                    
+                        $tel=mysqli_real_escape_string($link,$tel);
+                        // echo $tel;
+                    if(is_null($tel) || $tel =="") {
+                            $errors =$errors. 'فیلد تلفن نمی‌تواند خالی بماند';
+                        }
+                        elseif (strlen($tel)!= 11|| $tel[0]!= 0 || $tel[1]!= 9 ) {
+                            $errors = $errors.'شماره تلفن اشتباه هست';  
+                        }
+                    
+                    } 
+                    else {
+                        $errors = $errors.'شماره تلفن اشتباه هست';
+                    } 
+             } 
+                if ($k['name'] == "email")
+                
+                {
+                      $email=$k['value'];
+                  
+                    if(is_null($email) || $email =="") {
+                        $errors =$errors. 'فیلد ایمیل نمی‌تواند خالی بماند';
+                    }
+                    // $email = test_input($_POST["email"]);
+                    // check if e-mail address is well-formed
+                    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                        $errors =$errors. 'فیلد ایمیل نامعتبرهست';
+                    }
+                    
+                   
+                    $email=mysqli_real_escape_string($link,$email);
+                }
+            
+            
+            
+                if ($k['name'] == "pasword")
+                {
+                    $password=$k['value'];
+                    if(is_null($password) || $password =="") {
+                        $errors = $errors.'فیلدرمزعبور نمی‌تواند خالی بماند';
+                    }
+                    $pattern = '/^(?=.*[!@#$%^&*()\-_=+`~\[\]{}?])(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,30}$/';
+                    if(preg_match($pattern,$password)){
+                        $pass=password_hash("$password", PASSWORD_DEFAULT);
+                    }
+                    else {
+                        $errors = $errors.'رمزعبور باید شامل حروف بزرگ  وکوچک وعدد وکارکترهای@#باشد';
+                    }
+                    
+    
+                }
+                if ($k['name'] == "family")
+                {
+                            $family=$k['value'];
+                            if(is_null($family) || $family =="") {
+                                $errors = $errors.'فیلد نام خانوادگی نمی‌تواند خالی بماند';
+                            }
+                        $family=str_replace(" ","",$family);
+                        if($pattern = preg_match('/^[-A-Za-z\p{L} ]+$/u', $family) && mb_strlen($family)>2){
+                            $family=mysqli_real_escape_string($link,$family);
+                        }
+                        else {
+                            $errors = $errors.'فیلدنام خانوادگی حتما باید حروف باشدوبیشتر ازدو حروف باشد';
+        
+                        }
+                  
+
+                                    
+               }
+                
+            }
+     }  
+ } 
+//                 $link= mysqli_connect('localhost','root','');
+//                 if (! $link) {
+//                 echo 'could not connect :' . mysqli_connect_error();
+//                 exit;
+//                 }
+               
+//                 mysqli_select_db($link,'login1');
+                $sql = "SELECT `email`,`phone_number` FROM kvc"; // SQL with parameters
+                $result=mysqli_query($link, $sql);
+                $deta=mysqli_fetch_all($result, MYSQLI_ASSOC);
+                // echo 'yes';
+                
+                // $stmt = $link->prepare($sql); 
+                // // $stmt->bind_param("i", $id);
+                // $stmt->execute();
+                // $result = $stmt->get_result(); // get the mysqli result
+                // $user = $result->fetch_all(); // fetch data
+                
+                foreach ($deta as $d) {
+                    $z=$d['email'];
+                    $z1=$d['phone_number'];
+                    // echo $z."".$z1;
+                    if ($z== $email || $z1==$tel)
+                    {
+                        // echo 'yes';
+                        $errors = $errors.'فیلدقیلاثبت شده هست';
+                        break;
+                    //  header("LOCATION:http://localhost/php-sandbox/sabt/sabt3.php")
+                    }
+                   
+                   
+                  
+                }
+           
+        if ($errors==[0])
+        {
+            $stmt =  "INSERT INTO kvc (`name`,`family`,`phone_number`,`email`,`pasword`) VALUES
+            ('$name','$family','$tel','$email','$pass')"; /* Query 1 */
+            // mysqli_stmt_bind_param($stmt, "si", $string, $integer);
+            // mysqli_stmt_execute($stmt);
+            // mysqli_stmt_close($stmt); // CLOSE $stmt
+            $result1=mysqli_query($link, $stmt);
+            if ($link->query($stmt) === TRUE) {
+                // echo "New record created successfully";
+                $x="باموفقیت ثبت شد";
+                $a["status"]=true;
+                $a["data"]=$x;
+    
+                echo json_encode($a ,JSON_PRESERVE_ZERO_FRACTION| JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+               
+                // header("LOCATION: http://localhost/php-sandbox/test1/form1.php");
+              }
+         }   
+              else {
+                // echo "Error: " . $sql . "<br>" . $conn->error;
+                $a=[];
+                $a["status"]=false;
+                $a["data"]=$errors;
+    
+                echo json_encode($a ,JSON_PRESERVE_ZERO_FRACTION| JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+
+            
+              }
+  
+     
 
 ?>
+
+
+// if($_SERVER['REQUEST_METHOD'] == 'POST') {
+//     // $post[]=$_POST['rejester'];
+//     $a=$_POST['name'];
+// $name = json_decode($a, true);
+// if(is_null($name)) {
+//     $errors['name'] = 'فیلد نام نمی‌تواند خالی بماند';
+// }
+// $b=$_POST['family'];
+// $family = json_decode($b, true);
+// if(is_null($family)) {
+//     $errors['family'] = 'فیلد فامیلی نمی‌تواند خالی بماند';
+// }
+// $c=$_POST['tel'];
+// $tel = json_decode($c, true);
+// if(is_null($tel)) {
+//     $errors['tel'] = 'فیلد تلفن نمی‌تواند خالی بماند';
+// }
+// elseif (strlen($tel==11) && $tel[0]==0 && $tel[1]==9 ) {
+    
+// }
+// else {
+//     $errors['tel'] = 'شماره تلفن اشتباه هست';
+// }
+// $e=$_POST['email'];
+// $email = json_decode($e, true);
+// if(is_null($email)) {
+//     $errors['email'] = 'فیلد ایمیل نمی‌تواند خالی بماند';
+// }
+// $f=$_POST['pasword'];
+// $pasword = json_decode($f, true);
+// if(is_null($email)) {
+//     $errors['pasword'] = 'فیلد پسورد نمی‌تواند خالی بماند';
+// }
+// $pass=password_hash('$pasword', PASSWORD_DEFAULT);
+// $url =  "******";
+            // $context  = stream_context_create( $options );
+            // $result = file_get_contents( $url, false, $context );
+            // $response = json_decode( $result );
+        //  $statuse = json_decode($errors, true);
+        // $statuse = json_decode($statuse, flags: JSON_BIGINT_AS_STRING | JSON_OBJECT_AS_ARRAY);
+        // echo(json_encode($statuse));

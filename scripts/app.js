@@ -33,9 +33,7 @@ const captcha = document.querySelector("#captcha");
 const userCode = document.querySelector("#userCode");
 
 const captchaCode = Math.floor(Math.random() * 123456);
-
 captcha.value = captchaCode;
-captcha.innerHTML = captcha.value
 
 if (registerForm[0])
   registerForm[0].addEventListener("submit", (e) =>
@@ -50,7 +48,7 @@ function DUPLICATE(e, page, form) {
   const information = JSON.stringify(form.serializeArray());
 
   if (captcha) {
-    if (captchaCode.toString().split("").reverse().join("") === userCode.value) {
+    if (captcha.value === userCode.value) {
       fetch(
         page === "register"
           ? `server/${page}.php?${page}=${information}`
@@ -76,25 +74,8 @@ function DUPLICATE(e, page, form) {
 document.addEventListener(
   "copy",
   (evt) => {
-    disableselect()
     myBoard.copy("بشین تا کپی شه :)");
     evt.preventDefault();
   },
   false
 );
-
-
-function disableselect(e) {
-  return false
-}
-
-function reEnable() {
-  return true
-}
-
-document.onselectstart = new Function ("return false")
-
-if (window.sidebar) {
-  document.onmousedown = disableselect
-  document.onclick = reEnable
-}
